@@ -10,6 +10,8 @@ FONT_COLOR_SELECTED="#ffffff"
 def config():
     global TYPE_NOTE
     global DEFAULT_NOTEBOOK
+    global AUTO_EXIT
+    
     global BACKGROUND_COLOR_SELECTED
     global FONT_COLOR_SELECTED
     global FONT_COLOR
@@ -37,6 +39,12 @@ def config():
         except KeyError: 
             DEFAULT_NOTEBOOK = ''
             print("KeyError - DEFAULT_NOTEBOOK: Defaulting to 'None'")
+        try:
+            AUTO_EXIT = config.getboolean('module/joplin','AUTO_EXIT')
+            print(AUTO_EXIT)
+        except KeyError: 
+            AUTO_EXIT = True
+            print("KeyError - AUTO_EXIT: Defaulting to True")
         BACKGROUND_COLOR_SELECTED = "#"+config.get('module/joplin','BACKGROUND_COLOR_SELECTED')
         FONT_COLOR_SELECTED = "#"+config.get('module/joplin','FONT_COLOR_SELECTED')
         FONT_COLOR = "#"+config.get('module/joplin','FONT_COLOR')
@@ -66,15 +74,26 @@ def get_notebook_list():
 def set_current_notebook(notebook):
     return subprocess.check_output(['joplin','use',notebook])
 
+def all_children(window):
+    children = window.winfo_children()
+
+    for item in _list :
+        if item.winfo_children() :
+            children.extend(item.winfo_children())
+
+    return children
+
 def create_note(content):
     print(content)
-    subprocess.check_output(['joplin','mknote',content])
+    subprocess.check_output(['joplin','mknote',content])    
 
 def create_todo(content):
     subprocess.check_output(['joplin','mktodo',content])
 
-def create_note_in_notebook(note,notebook):
+def create_note_in_notebook(note,notebook,window):
     global TYPE_NOTE
+    global AUTO_EXIT
+
     try:
         set_current_notebook(notebook)
         if TYPE_NOTE:
@@ -84,6 +103,19 @@ def create_note_in_notebook(note,notebook):
             create_todo(note)
     except Exception as e:
         print("Error" + str(e))
+
+    
+    print(AUTO_EXIT)
+    
+    if AUTO_EXIT:
+        print("AUTO_EXIT:")
+        print(AUTO_EXIT)
+        window.destroy()
+        return
+
+    widget_list = all_children(window)
+    for item in widget_list:
+        item.pack_forget()
 
 def btn_status(listbox):
     print(listbox.get_selected())
@@ -131,9 +163,9 @@ def main():
             for item in notebooks:
                 listbox.insert(tk.END, item)
 
-            btn = tk.Button(window, bd=0, width=20, relief="flat", background=BACKGROUND_COLOR_BUTTON, foreground=FONT_COLOR_BUTTON, text="OK", command=lambda lb=listbox, e=entry: create_note_in_notebook(e.get("1.0",'end-1c'),lb.selection_get()))
+            btn = tk.Button(window, bd=0, width=20, relief="flat", background=BACKGROUND_COLOR_BUTTON, foreground=FONT_COLOR_BUTTON, text="OK", command=lambda lb=listbox, e=entry: create_note_in_notebook(e.get("1.0",'end-1c'),lb.selection_get(),window))
         else:
-            btn = tk.Button(window, bd=0, width=20, relief="flat", background=BACKGROUND_COLOR_BUTTON, foreground=FONT_COLOR_BUTTON, text="OK", command=lambda e=entry: create_note_in_notebook(e.get(),DEFAULT_NOTEBOOK))
+            btn = tk.Button(window, bd=0, width=20, relief="flat", background=BACKGROUND_COLOR_BUTTON, foreground=FONT_COLOR_BUTTON, text="OK", command=lambda e=entry: create_note_in_notebook(e.get(),DEFAULT_NOTEBOOK,window))
 
         btn.pack()
 

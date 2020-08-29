@@ -24,29 +24,30 @@ def config():
 
     try:
         config = configparser.ConfigParser()
-        config.read('config.ini')
+#        config.read('config.ini')
+        config.read('/home/lucolombo/Documentos/proyectos/polybar-joplin/config.ini')
         try:
-            TYPE_NOTE = config.getboolean('CONFIG','TYPE_NOTE')
+            TYPE_NOTE = config.getboolean('module/joplin','TYPE_NOTE')
         except KeyError:
             TYPE_NOTE=True
             print("KeyError - TYPE_NOTE: Defaulting to 'note'")
         try:
-            DEFAULT_NOTEBOOK = config.get('CONFIG','DEFAULT_NOTEBOOK')
+            DEFAULT_NOTEBOOK = config.get('module/joplin','DEFAULT_NOTEBOOK')
             print(DEFAULT_NOTEBOOK)
         except KeyError: 
             DEFAULT_NOTEBOOK = ''
             print("KeyError - DEFAULT_NOTEBOOK: Defaulting to 'None'")
-        BACKGROUND_COLOR_SELECTED = "#"+config.get('COLORS','BACKGROUND_COLOR_SELECTED')
-        FONT_COLOR_SELECTED = "#"+config.get('COLORS','FONT_COLOR_SELECTED')
-        FONT_COLOR = "#"+config.get('COLORS','FONT_COLOR')
-        BACKGROUND_COLOR = "#"+config.get('COLORS','BACKGROUND_COLOR')
-        BACKGROUND_COLOR_WINDOW = "#"+config.get('COLORS','BACKGROUND_COLOR_WINDOW')
-        BACKGROUND_COLOR_BUTTON = "#"+config.get('COLORS','BACKGROUND_COLOR_BUTTON')
-        FONT_COLOR_BUTTON = "#"+config.get('COLORS','FONT_COLOR_BUTTON')
-        BACKGROUND_COLOR_INPUT = "#"+config.get('COLORS','BACKGROUND_COLOR_INPUT')
-        FONT_COLOR_INPUT = "#"+config.get('COLORS','FONT_COLOR_INPUT')
-        BACKGROUND_COLOR_LABEL = "#"+config.get('COLORS','BACKGROUND_COLOR_LABEL')
-        FONT_COLOR_LABEL = "#"+config.get('COLORS','FONT_COLOR_LABEL')
+        BACKGROUND_COLOR_SELECTED = "#"+config.get('module/joplin','BACKGROUND_COLOR_SELECTED')
+        FONT_COLOR_SELECTED = "#"+config.get('module/joplin','FONT_COLOR_SELECTED')
+        FONT_COLOR = "#"+config.get('module/joplin','FONT_COLOR')
+        BACKGROUND_COLOR = "#"+config.get('module/joplin','BACKGROUND_COLOR')
+        BACKGROUND_COLOR_WINDOW = "#"+config.get('module/joplin','BACKGROUND_COLOR_WINDOW')
+        BACKGROUND_COLOR_BUTTON = "#"+config.get('module/joplin','BACKGROUND_COLOR_BUTTON')
+        FONT_COLOR_BUTTON = "#"+config.get('module/joplin','FONT_COLOR_BUTTON')
+        BACKGROUND_COLOR_INPUT = "#"+config.get('module/joplin','BACKGROUND_COLOR_INPUT')
+        FONT_COLOR_INPUT = "#"+config.get('module/joplin','FONT_COLOR_INPUT')
+        BACKGROUND_COLOR_LABEL = "#"+config.get('module/joplin','BACKGROUND_COLOR_LABEL')
+        FONT_COLOR_LABEL = "#"+config.get('module/joplin','FONT_COLOR_LABEL')
 
 
     except Exception as e:
@@ -104,6 +105,7 @@ def main():
 
     try:
         window = tk.Tk()
+        window.attributes('-type', 'dialog')
         window.title('polybar-joplin')
         window.configure(bg=BACKGROUND_COLOR_WINDOW)
         #window.geometry("300x200+10+20")
@@ -128,7 +130,7 @@ def main():
             for item in notebooks:
                 listbox.insert(tk.END, item)
 
-            btn = tk.Button(window, bd=0, width=20, relief="flat", background=BACKGROUND_COLOR_BUTTON, foreground=FONT_COLOR_BUTTON, text="OK", command=lambda lb=listbox, e=entry: create_note_in_notebook(e.get(),lb.selection_get()))
+            btn = tk.Button(window, bd=0, width=20, relief="flat", background=BACKGROUND_COLOR_BUTTON, foreground=FONT_COLOR_BUTTON, text="OK", command=lambda lb=listbox, e=entry: create_note_in_notebook(e.get("1.0",'end-1c'),lb.selection_get()))
         else:
             btn = tk.Button(window, bd=0, width=20, relief="flat", background=BACKGROUND_COLOR_BUTTON, foreground=FONT_COLOR_BUTTON, text="OK", command=lambda e=entry: create_note_in_notebook(e.get(),DEFAULT_NOTEBOOK))
 

@@ -113,6 +113,7 @@ def main():
         tk.Label(window, text="Note:", background=BACKGROUND_COLOR_LABEL, foreground=FONT_COLOR_LABEL).pack(anchor="center")
         entry = tk.Text(window, width=22, height=5, bd=0, relief="flat", highlightthickness=0, background=BACKGROUND_COLOR_INPUT, foreground=FONT_COLOR_INPUT, cursor="xterm")
         entry.pack()
+        entry.focus()
         print(DEFAULT_NOTEBOOK)
         print(len(DEFAULT_NOTEBOOK))
 
